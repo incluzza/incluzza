@@ -1,6 +1,12 @@
-actions: []
+actions:
+  - name: sendVerificationEmail
+    definition:
+      kind: synchronous
+      handler: http://localhost:3030/graphql
+    comment: Send email
 custom_types:
   enums: []
   input_objects: []
-  objects: []
+  objects:
+    - name: SendVerificationEmailOutput
   scalars: []

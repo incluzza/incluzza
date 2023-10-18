@@ -1,0 +1,11 @@
+type Mutation {
+  sendVerificationEmail(
+    email: String!
+  ): SendVerificationEmailOutput
+}
+
+type SendVerificationEmailOutput {
+  success: Boolean!
+  message: String
+}
+
