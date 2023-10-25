@@ -7,7 +7,7 @@
     - We'll also use https://github.com/oxalica/rust-overlay to get the appropriate Rust version based on toolchain
     - Example, https://github.com/srid/dioxus-desktop-template/blob/master/nix/flake-module.nix
 1. [x] **Rust package**: `nix build` should build the packages
-1. [ ] Use treefmt and format Rust sources along with Nix.
+1. [x] Use treefmt and format Rust sources along with Nix.
 1. [ ] Re-factor `flake.nix` by moving Rust logic to a new flake module
 
 Stretch,

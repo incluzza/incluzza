@@ -8,11 +8,14 @@
     rust-overlay.url = "github:oxalica/rust-overlay";
     crane.url = "github:ipetkov/crane";
     crane.inputs.nixpkgs.follows = "nixpkgs";
+
+    treefmt-nix.url = "github:numtide/treefmt-nix";
   };
   outputs = inputs:
     inputs.flake-parts.lib.mkFlake { inherit inputs; } {
       systems = import inputs.systems;
       imports = [
+        inputs.treefmt-nix.flakeModule
       ];
       perSystem = { config, pkgs, lib, system, ... }:
         let
@@ -56,6 +59,14 @@
             ];
           };
 
+          treefmt.config = {
+            projectRootFile = "flake.nix";
+            programs = {
+              nixpkgs-fmt.enable = true;
+              rustfmt.enable = true;
+            };
+          };
+
           packages.default = package;
 
           devShells.default = pkgs.mkShell {
@@ -69,7 +80,6 @@
               export RUST_SRC_PATH="${rustToolchain}/lib/rustlib/src/rust/library";
             '';
           };
-          formatter = pkgs.nixpkgs-fmt; # nix fmt (TODO: replace with treefmt)
         };
     };
 }
