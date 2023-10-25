@@ -16,13 +16,37 @@
       ];
       perSystem = { config, pkgs, lib, system, ... }:
         let
-          rustToolchain = (pkgs.rust-bin.fromRustupToolchainFile (inputs.self + /Backend/rust-toolchain.toml)).override {
+          src = ./Backend;
+
+          rustToolchain = (pkgs.rust-bin.fromRustupToolchainFile (src + /rust-toolchain.toml)).override {
             extensions = [
               "rust-src"
               "rust-analyzer"
               "clippy"
             ];
           };
+
+          craneLib = (inputs.crane.mkLib pkgs).overrideToolchain rustToolchain;
+
+          rustBuildInputs = [
+            pkgs.hasura-cli
+          ];
+
+          cargoToml = builtins.fromTOML (builtins.readFile (src + "/Cargo.toml"));
+
+          args = {
+            inherit src;
+            pname = cargoToml.package.name;
+            version = cargoToml.package.version;
+            # Non-Rust dependencies
+            buildInputs = rustBuildInputs;
+            strictDeps = true;
+          };
+
+          cargoArtifacts = craneLib.buildDepsOnly args;
+          package = craneLib.buildPackage (args // {
+            inherit cargoArtifacts;
+          });
         in
         {
           _module.args.pkgs = import inputs.nixpkgs {
@@ -32,9 +56,11 @@
             ];
           };
 
+          packages.default = package;
+
           devShells.default = pkgs.mkShell {
             name = "incluzza-dev";
-            nativeBuildInputs = [
+            nativeBuildInputs = rustBuildInputs ++ [
               pkgs.lazygit
               rustToolchain
             ];
