@@ -8,7 +8,7 @@
     - Example, https://github.com/srid/dioxus-desktop-template/blob/master/nix/flake-module.nix
 1. [x] **Rust package**: `nix build` should build the packages
 1. [x] Use treefmt and format Rust sources along with Nix.
-1. [ ] Re-factor `flake.nix` by moving Rust logic to a new flake module
+1. [x] Re-factor `flake.nix` by moving Rust logic to a new flake module
 
 Stretch,
 

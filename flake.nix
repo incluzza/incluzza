@@ -16,70 +16,37 @@
       systems = import inputs.systems;
       imports = [
         inputs.treefmt-nix.flakeModule
+        # Provides a 'incluzza' package and devShell.
+        ./nix/rust.nix
       ];
-      perSystem = { config, pkgs, lib, system, ... }:
-        let
-          src = ./Backend;
-
-          rustToolchain = (pkgs.rust-bin.fromRustupToolchainFile (src + /rust-toolchain.toml)).override {
-            extensions = [
-              "rust-src"
-              "rust-analyzer"
-              "clippy"
-            ];
-          };
-
-          craneLib = (inputs.crane.mkLib pkgs).overrideToolchain rustToolchain;
-
-          rustBuildInputs = [
-            pkgs.hasura-cli
+      perSystem = { self', config, pkgs, lib, system, ... }: {
+        _module.args.pkgs = import inputs.nixpkgs {
+          inherit system;
+          overlays = [
+            inputs.rust-overlay.overlays.default
           ];
+        };
 
-          cargoToml = builtins.fromTOML (builtins.readFile (src + "/Cargo.toml"));
-
-          args = {
-            inherit src;
-            pname = cargoToml.package.name;
-            version = cargoToml.package.version;
-            # Non-Rust dependencies
-            buildInputs = rustBuildInputs;
-            strictDeps = true;
-          };
-
-          cargoArtifacts = craneLib.buildDepsOnly args;
-          package = craneLib.buildPackage (args // {
-            inherit cargoArtifacts;
-          });
-        in
-        {
-          _module.args.pkgs = import inputs.nixpkgs {
-            inherit system;
-            overlays = [
-              inputs.rust-overlay.overlays.default
-            ];
-          };
-
-          treefmt.config = {
-            projectRootFile = "flake.nix";
-            programs = {
-              nixpkgs-fmt.enable = true;
-              rustfmt.enable = true;
-            };
-          };
-
-          packages.default = package;
-
-          devShells.default = pkgs.mkShell {
-            name = "incluzza-dev";
-            nativeBuildInputs = rustBuildInputs ++ [
-              pkgs.lazygit
-              rustToolchain
-            ];
-            shellHook = ''
-              # For rust-analyzer 'hover' tooltips to work.
-              export RUST_SRC_PATH="${rustToolchain}/lib/rustlib/src/rust/library";
-            '';
+        treefmt.config = {
+          projectRootFile = "flake.nix";
+          programs = {
+            nixpkgs-fmt.enable = true;
+            rustfmt.enable = true;
           };
         };
+
+        packages.default = self'.packages.incluzza;
+
+        devShells.default = pkgs.mkShell {
+          name = "incluzza-dev";
+          inputsFrom = [
+            self'.devShells.incluzza
+            config.treefmt.build.devShell
+          ];
+          nativeBuildInputs = [
+            pkgs.lazygit
+          ];
+        };
+      };
     };
 }
