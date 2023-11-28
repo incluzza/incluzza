@@ -1,5 +1,5 @@
 # incluzza
-A social network to enable persons with disabilities (PwD)
+A social network for persons with disabilities (PwD) and enablers.
 
 ### Tech Stack Selection
 
