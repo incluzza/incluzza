@@ -6,12 +6,12 @@
     - [Database Schema](#database-schema)
 
 ## Purpose
-*Develop a social network to enable persons with disabilities (PwD).*
+*Develop a social network to enable persons with disabilities (PwD) and enablers.*
 
 ## Goals
 1. Establish Peer to Peer networks of PwD.
 2. Connect Enablers like volunteers, NGOs.
-3. rovide opportunity roadmaps for PwDs and enablers. 
+3. Provide opportunity roadmaps for PwDs and enablers. 
 4. Facilitate resource sharing. 
 5. Employers to find candidates.
 
